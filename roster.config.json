@@ -1,0 +1,22 @@
+{
+  "staffRoles": [
+    { "id": "1527071371987783741", "name": "UWN | Creator & Founder Of UW" },
+    { "id": "1526819209953280086", "name": "Founder & Owner Second In Command" },
+    { "id": "1527071354321502410", "name": "UWN | Network Owner" },
+    { "id": "1527071355244384406", "name": "UWN | Network Co Owner" },
+    { "id": "1556460438986948678", "name": "UWN | Executive Director" },
+    { "id": "1556460454623318126", "name": "UWN | Executive" },
+    { "id": "1556460450118373396", "name": "UWN | Chief Of Staff" },
+    { "id": "1556462003848085525", "name": "UWN | Deputy Chief Of Staff" },
+    { "id": "1527071356041035807", "name": "UWN | Board Of Directors" },
+    { "id": "1555380215524364478", "name": "UWN | Advisors" },
+    { "id": "1556462474356588554", "name": "UWN | Network Director" },
+    { "id": "1527071361821053028", "name": "UWN | Management" },
+    { "id": "1527071363246985256", "name": "UWN | Assistant Management" },
+    { "id": "1527071364190703787", "name": "UWN | Interim Manager" },
+    { "id": "1527071379155980338", "name": "UWRP | Network Staff Team" }
+  ],
+  "includeMembers": true,
+  "memberRole": { "id": "", "name": "Members" },
+  "showBots": false
+}
