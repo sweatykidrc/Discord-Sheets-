@@ -40,24 +40,21 @@ const sheets = google.sheets({ version: 'v4', auth });
 const HEADERS = ['Rank', 'Name', 'Username', 'User ID', 'Joined'];
 const COLS = HEADERS.length;
 
-// ---------- Build roster from Discord ----------
 
 const byName = (a, b) =>
   a.displayName.localeCompare(b.displayName, undefined, { sensitivity: 'base' });
 
-// Roles are found by ID. The "name" in the config is only the label shown on the sheet,
-// so renaming a role in Discord never breaks the roster.
 async function buildRoster(guild) {
   await guild.members.fetch();
 
   const isEligible = (m) => config.showBots || !m.user.bot;
-  const assigned = new Set(); // each person appears once, under their highest rank
+  const assigned = new Set(); 
   const sections = [];
 
   for (const { id, name } of config.staffRoles) {
     const role = guild.roles.cache.get(id);
     if (!role) {
-      // Keep the rank on the sheet so the order stays visible, but flag it
+     
       console.warn(`Role ID ${id} ("${name}") not found in the server. Check the ID in roster.config.json.`);
       sections.push({ title: name, color: 0, members: [] });
       continue;
@@ -89,11 +86,10 @@ async function buildRoster(guild) {
   return sections;
 }
 
-// ---------- Turn roster into sheet rows + formatting ----------
 
 function toRows(sections) {
   const rows = [];
-  const headerRows = []; // { index, color }
+  const headerRows = [];
 
   const stamp = new Date().toLocaleString('en-US', {
     timeZone: 'America/New_York',
@@ -135,7 +131,7 @@ const intToRgb = (n) =>
 
 const isDark = ({ red, green, blue }) => 0.299 * red + 0.587 * green + 0.114 * blue < 0.55;
 
-// ---------- Write to Google Sheets ----------
+
 
 async function ensureTab() {
   const meta = await sheets.spreadsheets.get({ spreadsheetId: SHEET_ID });
@@ -154,10 +150,10 @@ async function writeSheet(rows, headerRows) {
   const sheetId = await ensureTab();
   const range = `'${SHEET_TAB}'`;
 
-  // 1. wipe old values
+
   await sheets.spreadsheets.values.clear({ spreadsheetId: SHEET_ID, range });
 
-  // 2. write new values
+
   await sheets.spreadsheets.values.update({
     spreadsheetId: SHEET_ID,
     range: `${range}!A1`,
@@ -165,14 +161,14 @@ async function writeSheet(rows, headerRows) {
     requestBody: { values: rows },
   });
 
-  // 3. formatting
+
   const full = { sheetId };
   const row = (r) => ({ sheetId, startRowIndex: r, endRowIndex: r + 1, startColumnIndex: 0, endColumnIndex: COLS });
 
   const requests = [
-    // reset previous formatting
+
     { repeatCell: { range: full, cell: {}, fields: 'userEnteredFormat' } },
-    // title
+  
     {
       repeatCell: {
         range: row(0),
@@ -180,7 +176,7 @@ async function writeSheet(rows, headerRows) {
         fields: 'userEnteredFormat.textFormat',
       },
     },
-    // column headers
+
     {
       repeatCell: {
         range: row(2),
@@ -193,7 +189,7 @@ async function writeSheet(rows, headerRows) {
         fields: 'userEnteredFormat(textFormat,backgroundColor)',
       },
     },
-    // freeze header
+
     {
       updateSheetProperties: {
         properties: { sheetId, gridProperties: { frozenRowCount: 3 } },
@@ -202,7 +198,7 @@ async function writeSheet(rows, headerRows) {
     },
   ];
 
-  // role header bands, colored with the Discord role colour
+
   for (const h of headerRows) {
     const bg = intToRgb(h.color);
     const fg = isDark(bg) ? { red: 1, green: 1, blue: 1 } : { red: 0, green: 0, blue: 0 };
@@ -232,14 +228,14 @@ async function writeSheet(rows, headerRows) {
   });
 }
 
-// ---------- Sync control ----------
+
 
 let running = false;
 let queued = false;
 
 async function syncRoster(reason = 'manual') {
   if (running) {
-    queued = true; // run once more after the current one finishes
+    queued = true;
     return;
   }
   running = true;
@@ -261,14 +257,14 @@ async function syncRoster(reason = 'manual') {
   }
 }
 
-// Debounce bursts of events (e.g. mass role changes) into a single sync
+
 let timer = null;
 function scheduleSync(reason) {
   clearTimeout(timer);
   timer = setTimeout(() => syncRoster(reason), 5000);
 }
 
-// ---------- Discord wiring ----------
+
 
 const syncCommand = new SlashCommandBuilder()
   .setName('syncroster')
